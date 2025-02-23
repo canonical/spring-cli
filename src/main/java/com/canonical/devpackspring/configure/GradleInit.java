@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *	  https://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.canonical.devpackspring.configure;
 
 import java.io.File;
@@ -26,7 +27,7 @@ import java.nio.file.StandardOpenOption;
  */
 public class GradleInit {
 
-	private final static String GRADLE_INIT_STRING = """
+	private static final String GRADLE_INIT_STRING = """
 
 			apply plugin: SpringBootSnapRepositoryPlugin
 
@@ -56,7 +57,7 @@ public class GradleInit {
 			}
 			""";
 
-	private final String GRADLE_CENTRAL_PLUGIN = """
+	private static final String GRADLE_CENTRAL_PLUGIN = """
 			beforeSettings { settings ->
 				settings.pluginManagement.repositories {
 					gradlePluginPortal()
@@ -73,14 +74,18 @@ public class GradleInit {
 
 	public boolean addGradletInitFile(Snap snap) throws IOException {
 		File settings = new File(m_gradleInitDir, snap.name() + ".gradle");
-		if (settings.exists())
+		if (settings.exists()) {
 			return false;
+		}
+
 		String initString = String.format(GRADLE_INIT_STRING, snap.name(), snap.name(), snap.name(), snap.name());
 		Files.writeString(settings.toPath(), initString, StandardOpenOption.CREATE_NEW);
 
 		File commonSettings = new File(m_gradleInitDir, "gradlePluginPortal.gradle");
-		if (commonSettings.exists())
+		if (commonSettings.exists()) {
 			return true;
+		}
+
 		Files.writeString(commonSettings.toPath(), GRADLE_CENTRAL_PLUGIN, StandardOpenOption.CREATE_NEW);
 		return true;
 	}

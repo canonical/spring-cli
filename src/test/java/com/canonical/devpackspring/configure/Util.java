@@ -16,23 +16,22 @@
 
 package com.canonical.devpackspring.configure;
 
-public record Snap(String name, String version, String channel, String mount, String summary, boolean installed) {
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
-	@Override
-	public int hashCode() {
-		return name.hashCode();
-	}
+public interface Util {
 
-	@Override
-	public boolean equals(Object other) {
-		if (other == null) {
-			return false;
-		}
-		if (other instanceof Snap otherSnap) {
-			if (name.equals(otherSnap.name)) {
-				return true;
+	static String resourceToString(String resource) throws IOException {
+		StringBuilder ret = new StringBuilder();
+		try (var reader = new BufferedReader(new InputStreamReader(Util.class.getResourceAsStream(resource)))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				ret.append(line);
+				ret.append("\n");
 			}
 		}
-		return false;
+		return ret.toString();
 	}
+
 }

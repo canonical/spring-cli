@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.canonical.devpackspring.configure;
 
 import java.io.ByteArrayInputStream;
@@ -86,8 +87,10 @@ public class Settings {
 
 	public Settings(File settingsDir) throws ParserConfigurationException, SAXException, IOException {
 		m_builder = DocumentBuilderFactory.newDefaultInstance().newDocumentBuilder();
-		if (!settingsDir.exists() && !settingsDir.mkdirs())
+		if (!settingsDir.exists() && !settingsDir.mkdirs()) {
 			throw new IOException("Unable to create the settings directory");
+		}
+
 		File settings = new File(settingsDir, "settings.xml");
 		if (!settings.exists()) {
 
