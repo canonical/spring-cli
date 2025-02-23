@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.cli.command;
+package com.canonical.devpackspring.snap;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.stream.Stream;
-
-import com.canonical.devpackspring.snap.Manifest;
 
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.table.ArrayTableModel;
