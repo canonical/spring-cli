@@ -17,21 +17,20 @@ package com.canonical.devpackspring.configure;
 
 public record Snap(String name, String version, String channel, String mount, String summary, boolean installed) {
 
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
 
-    @Override
-    public boolean equals(Object other) {
-        if (other == null)
-            return false;
-        if (other instanceof Snap) {
-            var otherSnap = (Snap) other;
-            if (name.equals(otherSnap.name)) {
-                return true;
-            }
-        }
-        return false;
-    }
+	@Override
+	public boolean equals(Object other) {
+		if (other == null)
+			return false;
+		if (other instanceof Snap otherSnap) {
+			if (name.equals(otherSnap.name)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

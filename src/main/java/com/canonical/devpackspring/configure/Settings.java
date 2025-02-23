@@ -44,108 +44,108 @@ import org.xml.sax.SAXException;
  */
 public class Settings {
 
-    private static final String SPRING_BOOT_PROFILE = """
-              <profile>
-              <id>%s</id>
-              <activation>
-                <activeByDefault>true</activeByDefault>
-              </activation>
-              <repositories>
-                <repository>
-                  <id>local-%s</id>
-                  <name>%s</name>
-                  <snapshots>
-                    <enabled>true</enabled>
-                  </snapshots>
-                  <releases>
-                    <enabled>true</enabled>
-                    <updatePolicy>always</updatePolicy>
-                  </releases>
-                  <url>file:///snap/%s/current/maven-repo/</url>
-                  <layout>default</layout>
-                </repository>
-              </repositories>
-              <pluginRepositories>
-                <pluginRepository>
-                  <id>%s-plugins</id>
-                  <name>%s plugins</name>
-                  <releases>
-                    <enabled>true</enabled>
-                  </releases>
-                  <url>file:///snap/%s/current/maven-repo/</url>
-                </pluginRepository>
-              </pluginRepositories>
-            </profile>
-                  """;
+	private static final String SPRING_BOOT_PROFILE = """
+			  <profile>
+			  <id>%s</id>
+			  <activation>
+			    <activeByDefault>true</activeByDefault>
+			  </activation>
+			  <repositories>
+			    <repository>
+			      <id>local-%s</id>
+			      <name>%s</name>
+			      <snapshots>
+			        <enabled>true</enabled>
+			      </snapshots>
+			      <releases>
+			        <enabled>true</enabled>
+			        <updatePolicy>always</updatePolicy>
+			      </releases>
+			      <url>file:///snap/%s/current/maven-repo/</url>
+			      <layout>default</layout>
+			    </repository>
+			  </repositories>
+			  <pluginRepositories>
+			    <pluginRepository>
+			      <id>%s-plugins</id>
+			      <name>%s plugins</name>
+			      <releases>
+			        <enabled>true</enabled>
+			      </releases>
+			      <url>file:///snap/%s/current/maven-repo/</url>
+			    </pluginRepository>
+			  </pluginRepositories>
+			</profile>
+			      """;
 
-    private Document m_settings;
-    private DocumentBuilder m_builder;
+	private Document m_settings;
 
-    public Settings(File settingsDir)
-            throws ParserConfigurationException, SAXException, IOException {
-        m_builder = DocumentBuilderFactory.newDefaultInstance().newDocumentBuilder();
-        if (!settingsDir.exists() && !settingsDir.mkdirs())
-            throw new IOException("Unable to create the settings directory");
-        File settings = new File(settingsDir, "settings.xml");
-        if (!settings.exists()) {
+	private DocumentBuilder m_builder;
 
-            m_settings = m_builder.newDocument();
-            Element root = m_settings.createElement("settings");
-            m_settings.appendChild(root);
-            root.setAttribute("xmlns", "http://www.w3.org/2001/XMLSchema-instance");
-            root.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-            root.setAttribute("xsi:schemaLocation",
-                    "http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd");
-            root.appendChild(m_settings.createElement("profiles"));
-        } else {
-            String content = Files.readString(settings.toPath());
-            content = content.replaceAll(">[\\s\r\n]*<", "><");
-            m_settings = m_builder.parse(new ByteArrayInputStream(content.getBytes()));
-            //
-            if (!"settings".equals(m_settings.getDocumentElement().getNodeName())) {
-                throw new RuntimeException(
-                        "settings.xml should have <settings/> as a root element");
-            }
-        }
-    }
+	public Settings(File settingsDir) throws ParserConfigurationException, SAXException, IOException {
+		m_builder = DocumentBuilderFactory.newDefaultInstance().newDocumentBuilder();
+		if (!settingsDir.exists() && !settingsDir.mkdirs())
+			throw new IOException("Unable to create the settings directory");
+		File settings = new File(settingsDir, "settings.xml");
+		if (!settings.exists()) {
 
-    public String toXml() throws TransformerException {
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-        StringWriter wr = new StringWriter();
-        transformer.transform(new DOMSource(m_settings), new StreamResult(wr));
-        return wr.toString();
-    }
+			m_settings = m_builder.newDocument();
+			Element root = m_settings.createElement("settings");
+			m_settings.appendChild(root);
+			root.setAttribute("xmlns", "http://www.w3.org/2001/XMLSchema-instance");
+			root.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+			root.setAttribute("xsi:schemaLocation",
+					"http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd");
+			root.appendChild(m_settings.createElement("profiles"));
+		}
+		else {
+			String content = Files.readString(settings.toPath());
+			content = content.replaceAll(">[\\s\r\n]*<", "><");
+			m_settings = m_builder.parse(new ByteArrayInputStream(content.getBytes()));
+			//
+			if (!"settings".equals(m_settings.getDocumentElement().getNodeName())) {
+				throw new RuntimeException("settings.xml should have <settings/> as a root element");
+			}
+		}
+	}
 
-    public boolean addMavenProfile(Snap snap)
-            throws XPathExpressionException, IllegalArgumentException, SAXException, IOException {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        String existingProfile = "/settings/profiles/profile/id[. ='" + snap.name() + "']";
-        String expression = "/settings/profiles";
-        Node snapProfile = (Node) xpath.evaluate(existingProfile, m_settings, XPathConstants.NODE);
-        if (snapProfile != null) {
-            return false;
-        }
-        Node profilesNode = (Node) xpath.evaluate(expression, m_settings, XPathConstants.NODE);
-        if (profilesNode == null) {
-            throw new IllegalArgumentException("profiles node is not found");
-        }
-        String profile = String.format(SPRING_BOOT_PROFILE,
-        // main repo
-        snap.name(), // id
-        snap.name(), // local-id
-        snap.name(), // name of the repository - new field in manifest?
-        snap.name(), // path segment
-        // plugin repo
-        snap.name(), // id
-        snap.name(), // name of the repository - new field in manifest?
-        snap.name() // path segment
-        );
-        Element fragment = m_builder.parse(new ByteArrayInputStream(profile.getBytes()))
-                .getDocumentElement();
-        profilesNode.appendChild(m_settings.adoptNode(fragment));
-        return true;
-    }
+	public String toXml() throws TransformerException {
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		Transformer transformer = transformerFactory.newTransformer();
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+		StringWriter wr = new StringWriter();
+		transformer.transform(new DOMSource(m_settings), new StreamResult(wr));
+		return wr.toString();
+	}
+
+	public boolean addMavenProfile(Snap snap)
+			throws XPathExpressionException, IllegalArgumentException, SAXException, IOException {
+		XPath xpath = XPathFactory.newInstance().newXPath();
+		String existingProfile = "/settings/profiles/profile/id[. ='" + snap.name() + "']";
+		String expression = "/settings/profiles";
+		Node snapProfile = (Node) xpath.evaluate(existingProfile, m_settings, XPathConstants.NODE);
+		if (snapProfile != null) {
+			return false;
+		}
+		Node profilesNode = (Node) xpath.evaluate(expression, m_settings, XPathConstants.NODE);
+		if (profilesNode == null) {
+			throw new IllegalArgumentException("profiles node is not found");
+		}
+		String profile = String.format(SPRING_BOOT_PROFILE,
+				// main repo
+				snap.name(), // id
+				snap.name(), // local-id
+				snap.name(), // name of the repository - new field in manifest?
+				snap.name(), // path segment
+				// plugin repo
+				snap.name(), // id
+				snap.name(), // name of the repository - new field in manifest?
+				snap.name() // path segment
+		);
+		Element fragment = m_builder.parse(new ByteArrayInputStream(profile.getBytes())).getDocumentElement();
+		profilesNode.appendChild(m_settings.adoptNode(fragment));
+		return true;
+	}
+
 }

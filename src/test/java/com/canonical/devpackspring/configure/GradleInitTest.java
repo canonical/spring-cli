@@ -17,7 +17,6 @@
 
 package com.canonical.devpackspring.configure;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,16 +28,17 @@ import org.junit.jupiter.api.io.TempDir;
 
 public class GradleInitTest {
 
-    @TempDir
-    private File outputDir;
+	@TempDir
+	private File outputDir;
 
-    @Test
-    public void testWriteGradleInit() throws IOException {
-        var snap = new Snap("foo", "1.1", "edge", "/mnt", "foobar", false);
-        var init = new GradleInit(outputDir);
-        init.addGradletInitFile(snap);
-        String result = Files.readString(Path.of(outputDir.getAbsolutePath(), "foo.gradle"));
-        assertTrue(result.contains("url \"file:///snap/foo/current/maven-repo/\""));
-        assertTrue(result.contains("name \"foo\""));
-    }
+	@Test
+	public void testWriteGradleInit() throws IOException {
+		var snap = new Snap("foo", "1.1", "edge", "/mnt", "foobar", false);
+		var init = new GradleInit(outputDir);
+		init.addGradletInitFile(snap);
+		String result = Files.readString(Path.of(outputDir.getAbsolutePath(), "foo.gradle"));
+		assertTrue(result.contains("url \"file:///snap/foo/current/maven-repo/\""));
+		assertTrue(result.contains("name \"foo\""));
+	}
+
 }

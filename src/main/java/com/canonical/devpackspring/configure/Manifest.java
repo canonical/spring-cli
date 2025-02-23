@@ -27,36 +27,33 @@ import org.yaml.snakeyaml.Yaml;
 
 public class Manifest {
 
-    public static final String SNAP = "/snap/";
-    private static final String CONTENT_SNAPS = "content-snaps";
+	public static final String SNAP = "/snap/";
 
-    private boolean isInstalled(String name) {
-        return new File(SNAP + name + "/current/").exists();
-    }
+	private static final String CONTENT_SNAPS = "content-snaps";
 
-    protected Set<Snap> load(String manifest) throws IOException {
-        HashSet<Snap> snapList = new HashSet<Snap>();
-        Yaml yaml = new Yaml();
-        try (InputStream is = new ByteArrayInputStream(manifest.getBytes())) {
-            Map<String, Object> raw = yaml.load(is);
-            @SuppressWarnings("unchecked")
-            Map<String, Object> snaps = (Map<String, Object>) raw.get(CONTENT_SNAPS);
-            if (snaps == null) {
-                throw new IOException("Manifest misses 'content-snaps' tag");
-            }
-            for (var name : snaps.keySet()) {
-                @SuppressWarnings("unchecked")
-                var data = (Map<String, String>) snaps.get(name);
+	private boolean isInstalled(String name) {
+		return new File(SNAP + name + "/current/").exists();
+	}
 
-                snapList.add(
-                        new Snap(name,
-                            data.get("version"),
-                            data.get("channel"),
-                            data.get("mount"),
-                            data.get("summary"),
-                            isInstalled(name)));
-            }
-        }
-        return snapList;
-    }
+	public Set<Snap> load(String manifest) throws IOException {
+		HashSet<Snap> snapList = new HashSet<Snap>();
+		Yaml yaml = new Yaml();
+		try (InputStream is = new ByteArrayInputStream(manifest.getBytes())) {
+			Map<String, Object> raw = yaml.load(is);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> snaps = (Map<String, Object>) raw.get(CONTENT_SNAPS);
+			if (snaps == null) {
+				throw new IOException("Manifest misses 'content-snaps' tag");
+			}
+			for (var name : snaps.keySet()) {
+				@SuppressWarnings("unchecked")
+				var data = (Map<String, String>) snaps.get(name);
+
+				snapList.add(new Snap(name, data.get("version"), data.get("channel"), data.get("mount"),
+						data.get("summary"), isInstalled(name)));
+			}
+		}
+		return snapList;
+	}
+
 }
