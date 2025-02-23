@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Canonical Ltd
+ * Copyright 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@
  */
 package com.canonical.devpackspring.configure;
 
-import java.io.File;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Files;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -33,6 +34,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -45,38 +47,38 @@ import org.xml.sax.SAXException;
 public class Settings {
 
 	private static final String SPRING_BOOT_PROFILE = """
-			  <profile>
-			  <id>%s</id>
-			  <activation>
-			    <activeByDefault>true</activeByDefault>
-			  </activation>
-			  <repositories>
-			    <repository>
-			      <id>local-%s</id>
-			      <name>%s</name>
-			      <snapshots>
-			        <enabled>true</enabled>
-			      </snapshots>
-			      <releases>
-			        <enabled>true</enabled>
-			        <updatePolicy>always</updatePolicy>
-			      </releases>
-			      <url>file:///snap/%s/current/maven-repo/</url>
-			      <layout>default</layout>
-			    </repository>
-			  </repositories>
-			  <pluginRepositories>
-			    <pluginRepository>
-			      <id>%s-plugins</id>
-			      <name>%s plugins</name>
-			      <releases>
-			        <enabled>true</enabled>
-			      </releases>
-			      <url>file:///snap/%s/current/maven-repo/</url>
-			    </pluginRepository>
-			  </pluginRepositories>
+			<profile>
+				<id>%s</id>
+				<activation>
+					<activeByDefault>true</activeByDefault>
+				</activation>
+				<repositories>
+					<repository>
+					<id>local-%s</id>
+					<name>%s</name>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+					<releases>
+						<enabled>true</enabled>
+						<updatePolicy>always</updatePolicy>
+					</releases>
+					<url>file:///snap/%s/current/maven-repo/</url>
+					<layout>default</layout>
+				</repository>
+				</repositories>
+				<pluginRepositories>
+					<pluginRepository>
+					<id>%s-plugins</id>
+					<name>%s plugins</name>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<url>file:///snap/%s/current/maven-repo/</url>
+				</pluginRepository>
+				</pluginRepositories>
 			</profile>
-			      """;
+			""";
 
 	private Document m_settings;
 
