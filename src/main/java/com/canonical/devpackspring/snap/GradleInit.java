@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.canonical.devpackspring.configure;
+package com.canonical.devpackspring.snap;
 
 import java.io.File;
 import java.io.IOException;

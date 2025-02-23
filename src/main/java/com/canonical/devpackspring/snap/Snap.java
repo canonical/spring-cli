@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.canonical.devpackspring.configure;
+package com.canonical.devpackspring.snap;
 
 public record Snap(String name, String version, String channel, String mount, String summary, boolean installed) {
 

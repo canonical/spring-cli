@@ -21,7 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.stream.Stream;
 
-import com.canonical.devpackspring.configure.Manifest;
+import com.canonical.devpackspring.snap.Manifest;
 
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.table.ArrayTableModel;
