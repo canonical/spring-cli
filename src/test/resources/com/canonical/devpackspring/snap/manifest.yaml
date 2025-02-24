@@ -1,0 +1,11 @@
+content-snaps:
+  content-for-spring-boot-33:
+    channel: latest/edge
+    mount: /foo
+    version: 6.2.2
+    description: foobar
+  content-for-spring-framework-61:
+    channel: latest/edge
+    mount: /foo
+    version: 6.2.2
+    description: foobar

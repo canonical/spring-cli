@@ -93,6 +93,10 @@ dependencies {
 	implementation 'com.theokanning.openai-gpt3-java:service'
 	implementation 'org.commonmark:commonmark'
 
+	// +dependencies for canonical snap
+	implementation 'org.yaml:snakeyaml:2.2'
+	// -dependencies for canonical snap
+
 	testImplementation 'org.openrewrite:rewrite-test'
 	testImplementation 'uk.org.webcompere:system-stubs-jupiter'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
