@@ -23,7 +23,7 @@ import java.nio.file.Path;
 public interface Util {
 
 	static String resourceToString(String resource) throws IOException {
-		return Files.readString(Path.of("src/test/resources/com/canonical/devpackspring/snap/"+ resource));
+		return Files.readString(Path.of("src/test/resources/com/canonical/devpackspring/snap/" + resource));
 	}
 
 }
