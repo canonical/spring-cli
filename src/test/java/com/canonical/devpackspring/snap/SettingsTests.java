@@ -55,7 +55,8 @@ public class SettingsTests {
 			wr.write(settings.toXml());
 		}
 		Settings other = new Settings(f);
-		assertThat(other.addMavenProfile(snap)).isTrue();
+		assertThat(other.addMavenProfile(snap)).isFalse(); // do not add settings second
+															// time
 		f.delete();
 	}
 
