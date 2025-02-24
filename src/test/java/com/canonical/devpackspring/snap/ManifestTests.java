@@ -28,7 +28,6 @@ import static org.hamcrest.CoreMatchers.is;
 public class ManifestTests extends Manifest {
 
 	@Test
-	@SuppressWarnings("checkstyle:all")
 	public void testLoadManifest() throws Exception {
 		Set<Snap> snaps = super.load(Util.resourceToString("manifest.yaml"));
 		HashSet<Snap> expected = new HashSet<Snap>();

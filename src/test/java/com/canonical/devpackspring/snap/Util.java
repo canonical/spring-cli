@@ -16,22 +16,14 @@
 
 package com.canonical.devpackspring.snap;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public interface Util {
 
 	static String resourceToString(String resource) throws IOException {
-		StringBuilder ret = new StringBuilder();
-		try (var reader = new BufferedReader(new InputStreamReader(Util.class.getResourceAsStream(resource)))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				ret.append(line);
-				ret.append("\n");
-			}
-		}
-		return ret.toString();
+		return Files.readString(Path.of("src/test/resources/com/canonical/devpackspring/snap/"+ resource));
 	}
 
 }
