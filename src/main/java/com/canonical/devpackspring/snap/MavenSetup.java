@@ -35,14 +35,13 @@ public interface MavenSetup {
 		File m2settings = new File(String.valueOf(Paths.get(System.getProperty("user.home"), ".m2")));
 		Settings settings = new Settings(m2settings);
 		if (!settings.addMavenProfile(snap)) {
-			return "Spring boot profile '" + snap.name() + "' is already present in maven user settings file "
-					+ m2settings;
+			return "The profile '" + snap.name() + "' is already present in maven user settings file " + m2settings;
 		}
 		File settingsFile = new File(m2settings, "settings.xml");
 		try (BufferedWriter wr = new BufferedWriter(new FileWriter(settingsFile))) {
 			wr.write(settings.toXml());
 		}
-		return "Spring boot profile '" + snap.name() + "' was added to maven user settings file " + m2settings;
+		return "The profile '" + snap.name() + "' was added to maven user settings file " + m2settings;
 	}
 
 }

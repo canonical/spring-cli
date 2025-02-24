@@ -72,7 +72,7 @@ public class GradleInit {
 		m_gradleInitDir = gradleInitDir;
 	}
 
-	public boolean addGradletInitFile(Snap snap) throws IOException {
+	public boolean addGradleInitFile(Snap snap) throws IOException {
 		File settings = new File(m_gradleInitDir, snap.name() + ".gradle");
 		if (settings.exists()) {
 			return false;

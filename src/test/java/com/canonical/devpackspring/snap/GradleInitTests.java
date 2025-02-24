@@ -35,7 +35,7 @@ public class GradleInitTests {
 	public void testWriteGradleInit() throws IOException {
 		var snap = new Snap("foo", "1.1", "edge", "/mnt", "foobar", false);
 		var init = new GradleInit(outputDir);
-		init.addGradletInitFile(snap);
+		init.addGradleInitFile(snap);
 		String result = Files.readString(Path.of(outputDir.getAbsolutePath(), "foo.gradle"));
 		assertThat(result).contains("url \"file:///snap/foo/current/maven-repo/\"");
 		assertThat(result).contains("name \"foo\"");

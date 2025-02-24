@@ -25,10 +25,10 @@ public interface GradleSetup {
 	static String setupGradle(Snap snap) throws IOException {
 		File gradleInitDir = new File(String.valueOf(Paths.get(System.getProperty("user.home"), ".gradle", "init.d")));
 		GradleInit gradleInit = new GradleInit(gradleInitDir);
-		if (!gradleInit.addGradletInitFile(snap)) {
-			return "Spring boot init file '" + snap.name() + ".gradle' was already added to " + gradleInitDir;
+		if (!gradleInit.addGradleInitFile(snap)) {
+			return "The init file '" + snap.name() + ".gradle' was already added to " + gradleInitDir;
 		}
-		return "Spring boot init file '" + snap.name() + ".gradle' was added to " + gradleInitDir;
+		return "The init file '" + snap.name() + ".gradle' was added to " + gradleInitDir;
 	}
 
 }
