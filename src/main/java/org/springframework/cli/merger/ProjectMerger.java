@@ -702,7 +702,8 @@ public class ProjectMerger {
 
 	public static AddRepository getRecipeAddRepository(String id, String url, String name, boolean snapshotsEnabled,
 			boolean releasesEnabled) {
-		return new AddRepository(id, url, name, null, snapshotsEnabled, null, null, releasesEnabled, null, null);
+		return new AddRepository(id, url, name, null, snapshotsEnabled, null, null, releasesEnabled, null, null,
+				AddRepository.Type.Repository);
 	}
 
 }
