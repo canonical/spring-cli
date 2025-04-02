@@ -21,11 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.openrewrite.shaded.jgit.diff.Edit;
-import org.openrewrite.shaded.jgit.diff.EditList;
-import org.openrewrite.shaded.jgit.diff.HistogramDiff;
-import org.openrewrite.shaded.jgit.diff.RawText;
-import org.openrewrite.shaded.jgit.diff.RawTextComparator;
+import org.eclipse.jgit.diff.Edit;
+import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.diff.HistogramDiff;
+import org.eclipse.jgit.diff.RawText;
+import org.eclipse.jgit.diff.RawTextComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
