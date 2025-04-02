@@ -30,6 +30,7 @@ import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.openrewrite.InMemoryExecutionContext;
@@ -50,6 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Low level test of performing a merge of a maven pom file
  */
+@Tag("maven-modification")
 public class MavenModificationTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(MavenModificationTests.class);

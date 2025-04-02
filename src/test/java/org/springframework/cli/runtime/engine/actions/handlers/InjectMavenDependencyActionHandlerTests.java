@@ -18,6 +18,7 @@ package org.springframework.cli.runtime.engine.actions.handlers;
 
 import java.nio.file.Path;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
@@ -29,6 +30,7 @@ import org.springframework.cli.support.MockConfigurations.MockUserConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Tag("maven-dependency")
 class InjectMavenDependencyActionHandlerTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
