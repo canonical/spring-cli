@@ -98,6 +98,7 @@ dependencies {
 	implementation "org.openrewrite:rewrite-gradle:${openrewriteVersion}"
 	implementation "org.openrewrite:rewrite-kotlin:${openrewriteVersion}"
 	implementation "org.eclipse.jgit:org.eclipse.jgit:7.2.0.202503040940-r"
+	implementation "org.codehaus.groovy:groovy-all:3.0.24"
 	// -dependencies for canonical snap
 
 	testImplementation 'org.openrewrite:rewrite-test'
