@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.Model;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -32,6 +33,7 @@ import org.springframework.cli.util.PomReader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Tag("boot")
 public class BootCommandsTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
