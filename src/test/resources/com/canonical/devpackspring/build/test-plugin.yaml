@@ -1,0 +1,29 @@
+checkStyle:
+  gradle:
+    id: checkstyle
+    version: 1.0.0
+    repository: gradlePluginPortal()
+    default-task: check
+    tasks:
+      - check
+rockcraft:
+  gradle:
+    id: io.github.rockcrafters.rockcraft
+    version: 1.0.0
+    build-system: gradle
+    classpath: io.github.rockcrafters.rockcraft:io.github.rockcrafters.rockcraft.gradle.plugin:1.0.0
+    class-name: com.canonical.rockcraft.gradle.RockcraftPlugin
+    repository: gradlePluginPortal()
+    default-task: build-rock
+    tasks:
+      - create-rock
+      - build-rock
+      - create-build-rock
+      - build-build-rock
+      - push-rock
+      - push-build-rock
+    description: |
+      This is a plugin description
+    default-configuration: |
+      rockcraft {
+      }
