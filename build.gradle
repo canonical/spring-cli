@@ -39,6 +39,9 @@ repositories {
 	if (version.endsWith('-SNAPSHOT')) {
 		maven { url "https://repo.spring.io/snapshot" }
 	}
+	// +dependencies for canonical snap
+	maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+	// -dependencies for canonical snap
 }
 
 ext {
@@ -99,6 +102,7 @@ dependencies {
 	implementation "org.openrewrite:rewrite-kotlin:${openrewriteVersion}"
 	implementation "org.eclipse.jgit:org.eclipse.jgit:7.2.0.202503040940-r"
 	implementation "org.codehaus.groovy:groovy-all:3.0.24"
+	implementation "org.gradle:gradle-tooling-api:8.9"
 	// -dependencies for canonical snap
 
 	testImplementation 'org.openrewrite:rewrite-test'

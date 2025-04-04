@@ -17,6 +17,7 @@
 package org.springframework.cli.support;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,6 +32,7 @@ import org.jline.terminal.Terminal;
 import org.mockito.Mockito;
 
 import org.springframework.cli.command.BootCommands;
+import org.springframework.cli.command.BuildCommands;
 import org.springframework.cli.command.CommandCommands;
 import org.springframework.cli.command.RoleCommands;
 import org.springframework.cli.command.SpecialCommands;
@@ -105,6 +107,11 @@ public class MockConfigurations {
 				}
 
 			};
+		}
+
+		@Bean
+		BuildCommands buildCommands() throws IOException {
+			return new BuildCommands(TerminalMessage.noop(), null);
 		}
 
 		@Bean
