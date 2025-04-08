@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,6 +39,12 @@ public class BuildCommandTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withUserConfiguration(MockConfigurations.MockBaseConfig.class);
+
+	@AfterEach
+	public void tearDown() {
+		// clear plugin configuration property
+		System.clearProperty(BuildCommands.PLUGIN_CONFIGURATION);
+	}
 
 	@Test
 	public void testListPlugins() throws IOException {
@@ -90,6 +97,7 @@ public class BuildCommandTests {
 			// format can be run
 			assertThatCode(() -> commands.run("format-me", null, workingDir)).doesNotThrowAnyException();
 		});
+		System.setProperty(BuildCommands.PLUGIN_CONFIGURATION, null);
 	}
 
 	@Test
