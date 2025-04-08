@@ -185,7 +185,7 @@ public class BuildCommands {
 	}
 
 	private @NotNull Stream<String[]> getPlugins(BuildSystem buildSystem) {
-		var rows = container.plugins(buildSystem).stream().map(x -> {
+		var rows = container.plugins(buildSystem).stream().sorted().map(x -> {
 			var desc = container.get(x, buildSystem);
 			return new String[] { x, desc.id(), desc.description(), buildSystem.name() };
 		});
