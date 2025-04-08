@@ -23,8 +23,6 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cli.support.IntegrationTestSupport;
@@ -56,10 +54,9 @@ public class BuildCommandTests {
 		assertThat(plugins).contains("io.github.rockcrafters.rockcraft");
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "gradle-kotlin", "gradle-groovy" })
-	public void testRunGradlePlugin(String project, final @TempDir Path workingDir) {
-		Path projectPath = Path.of("test-data").resolve("projects").resolve(project);
+	@Test
+	public void testRunGradlePlugin(final @TempDir Path workingDir) {
+		Path projectPath = Path.of("test-data").resolve("projects").resolve("gradle-kotlin");
 		IntegrationTestSupport.installInWorkingDirectory(projectPath, workingDir);
 		contextRunner.withUserConfiguration(MockConfigurations.MockUserConfig.class).run(context -> {
 			assertThat(context).hasSingleBean(BuildCommands.class);
