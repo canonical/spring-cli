@@ -127,7 +127,7 @@ public class BuildCommands {
 				.resultValue(plugin)
 				.resultMode(ResultMode.ACCEPT)
 				.selectItems(items)
-				.defaultSelect(items.getFirst().name())
+				.defaultSelect(items.iterator().next().name())
 				.sort(Comparator.comparing(Nameable::getName))
 				.and()
 				.build();
