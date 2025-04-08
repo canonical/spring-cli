@@ -97,7 +97,6 @@ public class BuildCommandTests {
 			// format can be run
 			assertThatCode(() -> commands.run("format-me", null, workingDir)).doesNotThrowAnyException();
 		});
-		System.setProperty(BuildCommands.PLUGIN_CONFIGURATION, null);
 	}
 
 	@Test
