@@ -99,6 +99,10 @@ public class BuildCommands {
 		PluginRunner runner = new PluginRunner((projectPath != null) ? projectPath : workingDir);
 		BuildSystem buildSystem = runner.detectBuildSystem();
 
+		if (buildSystem == BuildSystem.unknown) {
+			throw new IllegalArgumentException("Unknown build system, only Maven and Gradle are supported.\n");
+		}
+
 		PluginDescriptor desc = null;
 		if (plugin != null) {
 			desc = container.get(plugin, buildSystem);
@@ -116,7 +120,7 @@ public class BuildCommands {
 				.map(x -> (SelectItem) new DefaultSelectItem(x, x, true, false))
 				.toList();
 			if (items.isEmpty()) {
-				throw new IllegalArgumentException("No plugins defined.\n");
+				throw new IllegalArgumentException("No plugins defined for " + buildSystem + ".\n");
 			}
 
 			// @formatter: off
@@ -133,6 +137,10 @@ public class BuildCommands {
 				.build();
 			plugin = wizard.run().getContext().get(PLUGIN_PARAMETER_ID);
 			desc = container.get(plugin, buildSystem);
+		}
+
+		if (desc == null) {
+			throw new IllegalArgumentException("No plugin defined for " + buildSystem + " named " + plugin + "\n");
 		}
 
 		if (needCommandSelect) {
