@@ -17,15 +17,32 @@
 package org.springframework.cli.command;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.cli.support.IntegrationTestSupport;
+import org.springframework.cli.support.MockConfigurations;
 import org.springframework.cli.util.StubTerminalMessage;
 import org.springframework.shell.table.Table;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 public class BuildCommandTests {
+
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withUserConfiguration(MockConfigurations.MockBaseConfig.class);
+
+	@AfterEach
+	public void tearDown() {
+		// clear plugin configuration property
+		System.clearProperty(BuildCommands.PLUGIN_CONFIGURATION);
+	}
 
 	@Test
 	public void testListPlugins() throws IOException {
@@ -35,6 +52,64 @@ public class BuildCommandTests {
 		String plugins = ret.render(80);
 		assertThat(plugins).contains("rockcraft");
 		assertThat(plugins).contains("io.github.rockcrafters.rockcraft");
+	}
+
+	@Test
+	public void testRunGradlePlugin(final @TempDir Path workingDir) {
+		Path projectPath = Path.of("test-data").resolve("projects").resolve("gradle-kotlin");
+		IntegrationTestSupport.installInWorkingDirectory(projectPath, workingDir);
+		contextRunner.withUserConfiguration(MockConfigurations.MockUserConfig.class).run(context -> {
+			assertThat(context).hasSingleBean(BuildCommands.class);
+			BuildCommands commands = context.getBean(BuildCommands.class);
+			// we can specify the task to run
+			commands.run("rockcraft", "create-rock", workingDir);
+			assertThat(workingDir.resolve("build/rockcraft.yaml")).exists();
+			// default task works
+			commands.run("rockcraft", null, workingDir);
+			assertThat(workingDir.resolve("build/rock")).exists();
+		});
+	}
+
+	@Test
+	public void testCustomPluginContainer(final @TempDir Path workingDir) throws IOException {
+		Path projectPath = Path.of("test-data").resolve("projects").resolve("gradle-groovy");
+
+		IntegrationTestSupport.installInWorkingDirectory(projectPath, workingDir);
+		Path pluginsYaml = workingDir.resolve("plugins.yaml");
+		System.setProperty(BuildCommands.PLUGIN_CONFIGURATION, pluginsYaml.toString());
+
+		Files.write(pluginsYaml,
+				getClass().getResourceAsStream("/com/canonical/devpackspring/build/test-custom-plugin.yaml")
+					.readAllBytes());
+
+		contextRunner.withUserConfiguration(MockConfigurations.MockUserConfig.class).run(context -> {
+			assertThat(context).hasSingleBean(BuildCommands.class);
+			BuildCommands commands = context.getBean(BuildCommands.class);
+			Files.writeString(workingDir.resolve("src/main/java/com/example/demo/Test.java"), """
+					package com.example.demo;
+
+					public class Test {public Test() {} }
+
+					""");
+			// format can be run
+			assertThatCode(() -> commands.run("format-me", null, workingDir)).doesNotThrowAnyException();
+		});
+	}
+
+	@Test
+	public void testRunMavenPlugin(final @TempDir Path workingDir) {
+		Path projectPath = Path.of("test-data").resolve("projects").resolve("rest-service");
+		IntegrationTestSupport.installInWorkingDirectory(projectPath, workingDir);
+		contextRunner.withUserConfiguration(MockConfigurations.MockUserConfig.class).run(context -> {
+			assertThat(context).hasSingleBean(BuildCommands.class);
+			BuildCommands commands = context.getBean(BuildCommands.class);
+			// we can specify the task to run
+			commands.run("rockcraft", "install :create-rock", workingDir);
+			assertThat(workingDir.resolve("target/rockcraft.yaml")).exists();
+			// default task works
+			commands.run("rockcraft", null, workingDir);
+			assertThat(workingDir.resolve("target/rock")).exists();
+		});
 	}
 
 }

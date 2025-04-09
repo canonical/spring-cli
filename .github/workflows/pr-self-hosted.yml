@@ -19,6 +19,14 @@ jobs:
           java-version: 17
           cache: gradle
       - run: sudo apt-get -y --update install maven
+      - name: Setup LXD
+        uses: canonical/setup-lxd@main
+        with:
+          channel: 5.21/candidate
+      - name: Setup rockcraft
+        run: |
+          rm -rf /home/runner/.local/state/rockcraft/log/*
+          sudo snap install rockcraft --classic
       - run: ./gradlew build -PexcludeTags=boot,maven-modification,maven-dependency --no-daemon --stacktrace
       - name: Store reports
         if: failure()

@@ -16,29 +16,50 @@
 
 package org.springframework.cli.command;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Stream;
 
 import com.canonical.devpackspring.build.BuildSystem;
+import com.canonical.devpackspring.build.PluginDescriptor;
 import com.canonical.devpackspring.build.PluginDescriptorContainer;
+import com.canonical.devpackspring.build.PluginRunner;
 import org.jetbrains.annotations.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cli.util.IoUtils;
 import org.springframework.cli.util.TerminalMessage;
 import org.springframework.shell.command.annotation.Command;
+import org.springframework.shell.command.annotation.Option;
 import org.springframework.shell.component.flow.ComponentFlow;
+import org.springframework.shell.component.flow.DefaultSelectItem;
+import org.springframework.shell.component.flow.ResultMode;
+import org.springframework.shell.component.flow.SelectItem;
+import org.springframework.shell.component.support.Nameable;
 import org.springframework.shell.table.ArrayTableModel;
 import org.springframework.shell.table.BorderStyle;
 import org.springframework.shell.table.Table;
 import org.springframework.shell.table.TableBuilder;
 import org.springframework.shell.table.TableModel;
 
-@Command(command = "build", group = "Build Plugins")
+@Command
 public class BuildCommands {
+
+	public static final String PLUGIN_CONFIGURATION = "SPRING_CLI_BUILD_COMMANDS_PLUGIN_CONFIGURATION";
+
+	private static final String PLUGIN_PARAMETER_ID = "plugin";
+
+	private static final String PLUGIN_NAME = "Plugin";
+
+	private static final String TASK_PARAMETER_ID = "task";
+
+	private static final String TASK_NAME = "Task";
 
 	private final Path workingDir;
 
@@ -55,13 +76,103 @@ public class BuildCommands {
 		this.componentFlowBuilder = componentFlowBuilder;
 		this.workingDir = IoUtils.getWorkingDirectory();
 		this.container = null;
-		try (InputStream stream = getClass()
-			.getResourceAsStream("/com/canonical/devpackspring/plugin-configuration.yaml")) {
+		try (InputStream stream = getPluginConfiguration()) {
 			this.container = new PluginDescriptorContainer(new InputStreamReader(stream));
 		}
 	}
 
-	@Command(command = "list", description = "List build plugins supported by the snap")
+	private InputStream getPluginConfiguration() throws IOException {
+		String pluginConfigurationFile = System.getenv(PLUGIN_CONFIGURATION);
+		if (pluginConfigurationFile == null) {
+			pluginConfigurationFile = System.getProperty(PLUGIN_CONFIGURATION);
+		}
+		if (pluginConfigurationFile != null) {
+			return new FileInputStream(pluginConfigurationFile);
+		}
+		return getClass().getResourceAsStream("/com/canonical/devpackspring/plugin-configuration.yaml");
+	}
+
+	@Command(command = "plugin", description = "Run a build plugin for the project")
+	public void run(@Option(description = "plugin name") String plugin,
+			@Option(description = "task/goal") String command, @Option(description = "project path") Path projectPath)
+			throws IOException {
+		PluginRunner runner = new PluginRunner((projectPath != null) ? projectPath : workingDir);
+		BuildSystem buildSystem = runner.detectBuildSystem();
+
+		PluginDescriptor desc = null;
+		if (plugin != null) {
+			desc = container.get(plugin, buildSystem);
+		}
+
+		boolean needCommandSelect = (desc == null);
+		if (desc != null && command != null) {
+			final String cmd = command;
+			needCommandSelect = Arrays.stream(desc.tasks()).filter(x -> x.equals(cmd)).findAny().isEmpty();
+		}
+
+		if (desc == null) {
+			List<SelectItem> items = container.plugins(buildSystem)
+				.stream()
+				.map(x -> (SelectItem) new DefaultSelectItem(x, x, true, false))
+				.toList();
+			if (items.isEmpty()) {
+				throw new IllegalArgumentException("No plugins defined.\n");
+			}
+
+			// @formatter: off
+			ComponentFlow wizard = componentFlowBuilder.clone()
+				.reset()
+				.withSingleItemSelector(PLUGIN_PARAMETER_ID)
+				.name(PLUGIN_NAME)
+				.resultValue(plugin)
+				.resultMode(ResultMode.ACCEPT)
+				.selectItems(items)
+				.defaultSelect(items.iterator().next().name())
+				.sort(Comparator.comparing(Nameable::getName))
+				.and()
+				.build();
+			plugin = wizard.run().getContext().get(PLUGIN_PARAMETER_ID);
+			desc = container.get(plugin, buildSystem);
+		}
+
+		if (needCommandSelect) {
+			List<SelectItem> tasks = Arrays.stream(desc.tasks())
+				.map(x -> (SelectItem) new DefaultSelectItem(x, x, true, false))
+				.toList();
+
+			// @formatter: off
+			ComponentFlow wizard = componentFlowBuilder.clone()
+				.reset()
+				.withSingleItemSelector(TASK_PARAMETER_ID)
+				.name(TASK_NAME)
+				.resultValue(command)
+				.resultMode(ResultMode.ACCEPT)
+				.selectItems(tasks)
+				.defaultSelect(desc.defaultTask())
+				.sort(Comparator.comparing(Nameable::getName))
+				.and()
+				.build();
+			command = wizard.run().getContext().get(TASK_PARAMETER_ID);
+		}
+
+		if (!runner.run(buildSystem, desc, command, terminalMessage)) {
+			StringBuilder message = new StringBuilder();
+			message.append("Failed to run plugin ");
+			message.append(desc.id());
+			if (desc.version() != null) {
+				message.append(":");
+				message.append(desc.version());
+			}
+			if (command != null) {
+				message.append(" ");
+				message.append(command);
+			}
+			message.append("\n");
+			throw new RuntimeException(message.toString());
+		}
+	}
+
+	@Command(command = "list-plugins", description = "List supported build plugins")
 	public Table list() {
 		// TODO: check build system and print applicable plugins
 		var header = Stream.<String[]>of(new String[] { "Name", "Id", "Description", "Build System" });
@@ -74,7 +185,7 @@ public class BuildCommands {
 	}
 
 	private @NotNull Stream<String[]> getPlugins(BuildSystem buildSystem) {
-		var rows = container.plugins(buildSystem).stream().map(x -> {
+		var rows = container.plugins(buildSystem).stream().sorted().map(x -> {
 			var desc = container.get(x, buildSystem);
 			return new String[] { x, desc.id(), desc.description(), buildSystem.name() };
 		});

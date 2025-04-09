@@ -1,3 +1,21 @@
+format:
+  gradle:
+    id: io.spring.javaformat
+    version: 0.0.43
+    class-name: io.spring.javaformat.gradle.SpringJavaFormatPlugin
+    default-task: format
+    description: Formats source code
+    tasks:
+      - format
+    repository: gradlePluginPortal()
+    classpath: "io.spring.javaformat:io.spring.javaformat.gradle.plugin:0.0.43"
+  maven:
+    id: io.spring.javaformat:spring-javaformat-maven-plugin
+    version: 0.0.43
+    default-task: :apply
+    description: Formats source code
+    tasks:
+      - :apply
 rockcraft:
   gradle:
     id: io.github.rockcrafters.rockcraft
@@ -15,9 +33,11 @@ rockcraft:
       - build-build-rock
       - push-rock
       - push-build-rock
+    # Gradle Kotlin DSL snippet to configure the defaults
     default-configuration: |
-      rockcraft {
-      }
+          configure<com.canonical.rockcraft.builder.RockcraftOptions> {
+              setTargetRelease(21)
+          }
   maven:
     id: io.github.rockcrafters:rockcraft-maven-plugin
     version: 1.0.0
@@ -25,6 +45,7 @@ rockcraft:
     description: |
       Plugin for rock image generation
     tasks:
+      - install :create-rock
       - install :create-rock :build-rock
       - :create-build-rock
       - install :create-rock :build-rock :push-rock
