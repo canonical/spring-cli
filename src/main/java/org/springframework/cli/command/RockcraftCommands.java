@@ -27,7 +27,6 @@ import org.springframework.cli.util.TerminalMessage;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
 
-@Command(command = "rockcraft", group = "Devpack")
 public class RockcraftCommands {
 
 	private final TerminalMessage terminalMessage;
@@ -54,16 +53,6 @@ public class RockcraftCommands {
 			return "Added rockcraft plugin to " + path;
 		}
 		return "Project unchanged.";
-	}
-
-	@Command(command = "export-rock", description = "Export rock runtime image")
-	public String exportRock() {
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Command(command = "export-build-rock", description = "Export rock build and test image")
-	public String exportBuildRock() {
-		throw new UnsupportedOperationException("Not implemented");
 	}
 
 }
