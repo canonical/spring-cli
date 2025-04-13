@@ -152,10 +152,10 @@ public class SnapCommands {
 		Process p = pb.start();
 		int exitCode = p.waitFor();
 		if (exitCode != 0) {
-			return String.format("Failed to install %s.", toRemove.name());
+			return String.format("Failed to remove %s.", toRemove.name());
 		}
 
-		return String.format("Installed %s.", toRemove.name());
+		return String.format("Removed %s.", toRemove.name());
 	}
 
 	private Snap getSnap(String snap, boolean installed) throws IOException {
