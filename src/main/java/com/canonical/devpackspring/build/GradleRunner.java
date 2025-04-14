@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
 
 import org.gradle.tooling.BuildLauncher;
 import org.gradle.tooling.GradleConnector;
@@ -38,6 +39,9 @@ public abstract class GradleRunner {
 
 	public static boolean run(Path baseDir, PluginDescriptor desc, String task, TerminalMessage message)
 			throws IOException {
+		DefaultGradleConnector connector = (DefaultGradleConnector) GradleConnector.newConnector();
+		connector.daemonMaxIdleTime(1, TimeUnit.SECONDS);
+		connector.setVerboseLogging(true);
 		OutputStream terminalStream = new TerminalOutputStream(message, new AttributedStyle().foregroundDefault());
 		OutputStream terminalStreamError = new TerminalOutputStream(message,
 				new AttributedStyle().foreground(AttributedStyle.RED));
@@ -50,7 +54,6 @@ public abstract class GradleRunner {
 			initScript = Files.createTempFile("init", ".gradle.kts");
 			writeTemporaryInitFile(initScript, desc);
 
-			DefaultGradleConnector connector = (DefaultGradleConnector) GradleConnector.newConnector();
 			if (Files.exists(baseDir.resolve("gradle/wrapper/gradle-wrapper.properties"))) {
 				connector.useBuildDistribution();
 			}
@@ -64,6 +67,7 @@ public abstract class GradleRunner {
 					.addArguments("--init-script", initScript.toString(), task)
 					.forTasks(task);
 				buildLauncher.run();
+				connection.close();
 				return true;
 			}
 		}
@@ -76,6 +80,7 @@ public abstract class GradleRunner {
 			return false;
 		}
 		finally {
+			connector.disconnect();
 			if (initScript != null) {
 				Files.deleteIfExists(initScript);
 			}
