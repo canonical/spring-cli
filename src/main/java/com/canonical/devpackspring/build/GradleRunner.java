@@ -41,7 +41,6 @@ public abstract class GradleRunner {
 			throws IOException {
 		DefaultGradleConnector connector = (DefaultGradleConnector) GradleConnector.newConnector();
 		connector.daemonMaxIdleTime(1, TimeUnit.SECONDS);
-		connector.setVerboseLogging(true);
 		OutputStream terminalStream = new TerminalOutputStream(message, new AttributedStyle().foregroundDefault());
 		OutputStream terminalStreamError = new TerminalOutputStream(message,
 				new AttributedStyle().foreground(AttributedStyle.RED));
