@@ -1,3 +1,7 @@
+= This repository is no longer actively maintained 
+
+Please use link:https://github.com/canonical/devpack-for-spring-cli[devpack-for-spring-cli].
+
 = A CLI focused on developer productivity
 
 * Note: this is a work in progress.
